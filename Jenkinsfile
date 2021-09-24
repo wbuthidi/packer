@@ -1,9 +1,9 @@
 
-if(env.BRANCH == "dev-.*"){
+if(env.BRANCH_NAME ==~ "dev-.*"){
     environment="dev"
     region="us-east-1"
 }
-else if(env.BRANCH == "qa-.*"){
+else if(env.BRANCH_NAME ==~ "qa-.*"){
     environment="qa"
     region="us-east-2"
 }
@@ -34,5 +34,13 @@ node("worker1"){
                 '''
             }
         }
+    }
+    
+    stage("Create Instance"){
+        build job: 'terraform-ec2', parameters: [
+            string(name: 'environment', value: "$environment"),
+            string(name: 'ami_name', value: "$image_name"),
+            booleanParam(name: 'command', value: true)
+            ]
     }
 }
